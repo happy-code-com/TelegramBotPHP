@@ -741,8 +741,15 @@ class Telegram {
     public function getUpdates($offset = 0, $limit = 100, $timeout = 0, $update = true) {
         $content = array('offset' => $offset, 'limit' => $limit, 'timeout' => $timeout);
         $this->updates = $this->endpoint("getUpdates", $content);
-        if ($update AND count($this->updates["result"]) > 0) {
-            $last_element_id = $this->updates["result"][count($this->updates["result"]) - 1]["update_id"] + 1;
+        $count = count($this->updates);
+        if ($update AND $count > 0) {
+            
+            if (isset($this->updates["result"][$count-1])) {
+                $last_element_id = $this->updates["result"][$count-1]["update_id"] + 1;
+            } else {
+                $last_element_id = $this->updates["result"][$count]["update_id"] + 1;
+            }
+
             $content = array('offset' => $last_element_id, 'limit' => "1", 'timeout' => $timeout);
             $this->endpoint("getUpdates", $content);
         }
